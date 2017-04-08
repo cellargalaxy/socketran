@@ -30,8 +30,9 @@ public class TestThread implements Runnable{
 		}
 	}
 	public static void main(String[] args) {
-		M m=new M();
-		new Thread(new TestThread(m, 10, "A")).start();
-		new Thread(new TestThread(m, 50, "B")).start();
+		byte[] bs="     ".getBytes();
+		for(byte b:bs){
+			System.out.println(b);
+		}
 	}
 }

@@ -19,7 +19,10 @@ public class Conversation{
 		if(isConversing==false) isConversing=true;
 		return isConversing;
 	}
-	public void converOver() {
+	/**
+	 * 接收方通知发送方接收完成，并且释放会话权
+	 */
+	public void converInputOver() {
 		isConversing=false;
 	}
 	
