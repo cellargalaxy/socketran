@@ -9,6 +9,7 @@ import dataByte.DataPackage;
 import dataByte.DataPool;
 
 public class OutputThread extends IOThread{
+	private final static byte space=32;
 	private OutputStream outputStream;
 	private DataPool dataPool;
 	
@@ -21,7 +22,14 @@ public class OutputThread extends IOThread{
 		this.outputStream = outputStream;
 		this.dataPool = dataPool;
 	}
-
+	
+	public void sendShakeHandsInfo(String shakeHandInfo) throws IOException {
+		byte[] bs=new byte[byteLen];
+		byte[] shakeHandInfoByte=shakeHandInfo.getBytes();
+		fillingByte(bs, 0, byteLen, shakeHandInfoByte);
+		write(bs, 0, byteLen);
+	}
+	
 	private void write(byte[] bs,int off,int len) throws IOException {
 		outputStream.write(bs, off, len);
 		outputStream.flush();
@@ -33,7 +41,15 @@ public class OutputThread extends IOThread{
 		run=false;
 		try { outputStream.close(); } catch (IOException e) { e.printStackTrace(); }
 	}
-
+	private void fillingByte(byte[] bs1,int off ,int len,byte[] bs2) {
+		int point=off;
+		for (; point<len && point < bs1.length && point<bs2.length; point++) {
+			bs1[point]=bs2[point-off];
+		}
+		for (; point < bs1.length; point++) {
+			bs1[point]=space;
+		}
+	}
 	
 	
 	@Override

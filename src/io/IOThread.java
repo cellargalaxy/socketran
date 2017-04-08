@@ -24,5 +24,14 @@ public abstract class IOThread implements Runnable{
 
 
 	public abstract void stop();
+
+
+
+
+	public void setByteLen(int byteLen) {
+		this.byteLen = byteLen;
+	}
+	
+	
 	
 }
