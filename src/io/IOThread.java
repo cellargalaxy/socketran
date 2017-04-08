@@ -11,27 +11,19 @@ public abstract class IOThread implements Runnable{
 	
 	
 	
-	
-	public IOThread(Conversation conversation, int byteLen,DataPackage dataPackage) {
+	public IOThread(Conversation conversation, int byteLen, DataPackage dataPackage) {
 		super();
-		run = true;
 		this.conversation = conversation;
 		this.byteLen = byteLen;
-		this.dataPackage=dataPackage;
+		this.dataPackage = dataPackage;
+		run=true;
 	}
-
-
-
-
+	
+	protected abstract void freeConver();
 	public abstract void stop();
-
-
-
 
 	public void setByteLen(int byteLen) {
 		this.byteLen = byteLen;
 	}
-	
-	
 	
 }
