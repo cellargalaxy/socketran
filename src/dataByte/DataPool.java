@@ -16,5 +16,7 @@ public class DataPool {
 	public Data pollData() {
 		return dataPool.poll();
 	}
-	
+	public boolean removeData(Data data) {
+		return dataPool.remove(data);
+	}
 }

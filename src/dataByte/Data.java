@@ -30,7 +30,7 @@ public interface Data {
 	 * @param len
 	 * @return
 	 */
-	public int read(byte[] bs);
+	public int read(byte[] bs,int off,int len);
 	/**
 	 * 对读做最后一些销毁处理，例如关闭流
 	 */

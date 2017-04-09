@@ -11,34 +11,41 @@ import dataByte.DataPool;
 public class OutputThread extends IOThread{
 	private OutputStream outputStream;
 	private DataPool dataPool;
+	private int waitTime;
 	
 	
 	
-	public OutputThread(Conversation conversation, int byteLen, DataPackage dataPackage, OutputStream outputStream,
-			DataPool dataPool) {
-		super(conversation, byteLen, dataPackage);
+	/**
+	 * 服务端和客户端都通过此创建OutputThread对象
+	 * 客户端由于决定byteLen，所以可以一开始就创建
+	 * 服务端则需要先创建InputThread，等待握手信息之后再创建OutputThread
+	 * @param conversation
+	 * @param dataPackage
+	 * @param outputStream
+	 * @param dataPool
+	 * @param byteLen
+	 */
+	public OutputThread(Conversation conversation, DataPackage dataPackage,int byteLen, OutputStream outputStream,
+			DataPool dataPool,int waitTime) {
+		super(conversation, dataPackage);
+		this.byteLen=byteLen;
 		this.outputStream = outputStream;
 		this.dataPool = dataPool;
+		this.waitTime=waitTime;
 	}
-
-	private synchronized void sendDataPool() throws InterruptedException, IOException {
+	
+	public void sendShakeHandInfo(byte[] bs,int off,int len) throws IOException {
+		send(bs, off, len);
+	}
+	
+	private synchronized void sendDataPool() throws IOException, InterruptedException {
 		while (run) {
 			Data data=dataPool.pollData();
 			if (data!=null) {
-				while (run) {
-					if (Math.random()<10) {
-						System.out.println("添加一个Data");
-						sendData(data);
-						freeConver();
-						break;
-					} else {
-						this.wait();
-					}
-				}
+				sendData(data);
 			} else {
-				this.wait();
+				this.wait(waitTime);
 			}
-			Thread.sleep(1000);/////////////////////////////////////////////////////////
 		}
 	}
 	
@@ -46,7 +53,8 @@ public class OutputThread extends IOThread{
 		dataPackage.setData(data);
 		int len=-1;
 		byte[] bs=new byte[byteLen];
-		while ((len=dataPackage.read(bs))!=-1) {
+		while ((len=dataPackage.read(bs,0,bs.length))!=-1) {
+	//		System.out.println("发送:长度:"+len+";"+new String(bs,0,len));
 			send(bs, 0, len);
 		}
 		dataPackage.destroyRead();
@@ -57,10 +65,6 @@ public class OutputThread extends IOThread{
 		outputStream.flush();
 	}
 	
-	@Override
-	protected void freeConver() {
-		//还有释放会话权
-	}
 	
 	@Override
 	public void run() {
@@ -70,7 +74,7 @@ public class OutputThread extends IOThread{
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			stop();
+			conversation.stopAll();
 		}
 	}
 

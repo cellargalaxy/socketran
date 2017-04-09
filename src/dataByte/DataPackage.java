@@ -17,6 +17,7 @@ public class DataPackage {
 	private Data data;
 	private int randomNum;
 	private long infoLen;
+	private long infoLenCount;
 	
 	private boolean yetMainHeadInfo;
 	private boolean yetSeconHeadInfo;
@@ -45,18 +46,24 @@ public class DataPackage {
 		yetSeconHeadInfo=false;
 	}
 
-
-	public int read(byte[] bs) {
+	
+	public int read(byte[] bs,int off,int len) {
 		try {
 			if (!yetMainHeadInfo) {
-				if(!initRead()) return -1;
+				if(!initRead(len-off)) return -1;
 				yetMainHeadInfo=true;
-				return createMainHeadInfo(bs);
+				return createMainHeadInfo(bs,off,len);
 			}else if (!yetSeconHeadInfo) {
 				yetSeconHeadInfo=true;
-				return createSeconHeadInfo(bs);
+				return createSeconHeadInfo(bs,off,len);
 			}else {
-				return readInfo(bs);
+				infoLenCount+=len-off;
+				if(infoLenCount>infoLen) {
+					len-=infoLenCount-infoLen;
+					return readInfo(bs,off,len);
+				}else {
+					return readInfo(bs,off,len);
+				}
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -66,38 +73,42 @@ public class DataPackage {
 	}
 	public void destroyRead() {
 		if(data!=null) {
-			data.destroyWrite();
+			data.destroyRead();
 			data=null;
 		}
 		yetMainHeadInfo=false;
 		yetSeconHeadInfo=false;
 	}
 	
-	private boolean initRead() {
+	private boolean initRead(int byteLen) {
 		randomNum=createRandomNum();
 		infoLen=data.getInfoLen();
+		infoLenCount=0;
 		return data.initRead();
 	}
-	private int createMainHeadInfo(byte[] bs) throws UnsupportedEncodingException {
+	private int createMainHeadInfo(byte[] bs,int off ,int len) throws UnsupportedEncodingException {
 		String mainHeadInfo=data.getDataName()+SEPARATOR+randomNum+SEPARATOR+infoLen;
 		byte[] mainHeadInfoByte=mainHeadInfo.getBytes(CODING);
-		fillingByte(bs, mainHeadInfoByte);
-		System.out.println("我要看看main头信息:"+new String(bs,CODING));
+		fillingByte(bs, off,len,mainHeadInfoByte);
 		return bs.length;
 	}
-	private int createSeconHeadInfo(byte[] bs) throws UnsupportedEncodingException {
+	private int createSeconHeadInfo(byte[] bs,int off,int len) throws UnsupportedEncodingException {
 		byte[] seconHeadInfoByte=data.getHeadInfo().getBytes(CODING);
-		fillingByte(bs, seconHeadInfoByte);
+		fillingByte(bs, off,len ,seconHeadInfoByte);
 		return bs.length;
 	}
-	private int readInfo(byte[] bs) {
-		return data.read(bs);
+	private int readInfo(byte[] bs,int off,int len) {
+		if(len<off) return -1;
+		else {
+			data.read(bs,off,len);
+			return bs.length;
+		}
 	}
 	
 	
 	
 	public boolean write(byte[] bs,int off ,int len) {
-		System.out.println("收到:"+new String(bs,off,len));
+	//	System.out.println("收到:"+new String(bs,off,len));
 		try {
 			if (!yetMainHeadInfo) {
 				yetMainHeadInfo=true;
@@ -106,8 +117,16 @@ public class DataPackage {
 				yetSeconHeadInfo=true;
 				return dealSeconHeadInfo(bs, off, len);
 			}else {
-				writeInfo(bs, off, len);
-				return true;
+				infoLenCount+=len-off;
+				if (infoLenCount>=infoLen) {
+					len-=infoLenCount-infoLen;
+					writeInfo(bs, off, len);
+					return false;
+				} else {
+					writeInfo(bs, off, len);
+					return true;
+				}
+				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -125,6 +144,7 @@ public class DataPackage {
 	}
 	
 	private boolean initWrite(String seconHeadInfo) {
+		infoLenCount=0;
 		return data.initWrite(seconHeadInfo);
 	}
 	private boolean dealMainHeadInfo(byte[] bs,int off ,int len) throws UnsupportedEncodingException {
@@ -148,18 +168,16 @@ public class DataPackage {
 	
 	private boolean choiceData(String dataName) {
 		for(Data d:datas){
-			System.out.println("比较数据类型:"+dataName);
 			if (d.getDataName().equals(dataName)) {
-				System.out.println("数据类型比较正确");
 				data=d;
 				return true;
 			}
 		}
 		return false;
 	}
-	private static void fillingByte(byte[] bs1,byte[] bs2) {
-		int point=0;
-		for (; point < bs1.length && point<bs2.length; point++) bs1[point]=bs2[point];
+	private static void fillingByte(byte[] bs1,int off,int len,byte[] bs2) {
+		int point=off;
+		for (; point < bs1.length && point-off<bs2.length && point<len; point++) bs1[point]=bs2[point-off];
 		for (; point < bs1.length; point++) bs1[point]=SPACE;
 	}
 	private static int createRandomNum() {
