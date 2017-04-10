@@ -41,7 +41,6 @@ public class OutputThread extends IOThread{
 			Data data=dataPool.pollData();
 			if (data!=null) {
 				sendData(data);
-				Thread.sleep(1000);
 			} else {
 				this.wait();
 			}
