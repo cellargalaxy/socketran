@@ -12,14 +12,16 @@ public class SerThread implements Runnable{
 	private File saveFolder;
 	private boolean run;
 	private ServerSocket serverSocket;
+	private int waitTime;
 	
 	public static void main(String[] args) throws IOException {
-		new Thread(new SerThread(1234, new File("f:/")),"服务端").start();
+		new Thread(new SerThread(1234, new File("f:/"),10),"服务端").start();
 	}
 	
-	public SerThread(int port,File saveFolder) throws IOException {
+	public SerThread(int port,File saveFolder,int waitTime) throws IOException {
 		super();
 		this.saveFolder=saveFolder;
+		this.waitTime=waitTime;
 		run=true;
 		serverSocket=new ServerSocket(port);
 	}
@@ -28,7 +30,7 @@ public class SerThread implements Runnable{
 		LinkedList<Data> datas=new LinkedList<Data>();
 		datas.add(new DataFile(saveFolder,null));
 		datas.add(new DataString(null));
-		new Ser(socket, datas);
+		new Ser(socket, datas,waitTime);
 	}
 	private void stop() {
 		run=false;

@@ -11,8 +11,10 @@ import dataByte.Data;
 
 public class Cli extends Client{
 
-	public Cli(int byteLen, Socket socket, LinkedList<Data> datas) throws IOException {
-		super(byteLen, socket, datas);
+	
+
+	public Cli(int byteLen, Socket socket, LinkedList<Data> datas, int waitTime) throws IOException {
+		super(byteLen, socket, datas, waitTime);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -47,15 +49,15 @@ public class Cli extends Client{
 		}
 	}
 	
-	public static Cli createCli(int byteLen,String host,int port,File saveFolder) throws UnknownHostException, IOException {
+	public static Cli createCli(int byteLen,String host,int port,File saveFolder,int waitTime) throws UnknownHostException, IOException {
 		Socket socket=new Socket(host, port);
 		LinkedList<Data> datas=new LinkedList<Data>();
 		datas.add(new DataFile(saveFolder,null));
 		datas.add(new DataString(null));
-		return new Cli(byteLen, socket, datas);
+		return new Cli(byteLen, socket, datas,waitTime);
 	}
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		Cli cli=Cli.createCli(1024, "127.0.0.1", 1234, new File("g:/"));
-		cli.sendFolderOrFile(new File("G:/电影/MTCT161118106.mp4"));
+		Cli cli=Cli.createCli(2048, "127.0.0.1", 1234, new File("g:/"),10);
+		cli.sendFolderOrFile(new File("G:/图片"));
 	}
 }

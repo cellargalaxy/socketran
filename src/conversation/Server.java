@@ -8,9 +8,11 @@ import dataByte.Data;
 
 public abstract class Server extends Conversation{
 
-	public Server(Socket socket, LinkedList<Data> datas) throws IOException {
-		super(socket, datas);
+	public Server(Socket socket, LinkedList<Data> datas, int waitTime) throws IOException {
+		super(socket, datas, waitTime);
 		// TODO Auto-generated constructor stub
 	}
+
+	
 	
 }

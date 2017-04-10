@@ -40,10 +40,6 @@ public class InputThread extends IOThread{
 		if (conversation.isServer()) {
 			bs=new byte[Conversation.INIT_BYTE_LEN];
 			if(run && (len=inputStream.read(bs,0,bs.length))!=-1) conversation.dealMainShakeHandInfo(bs, 0, len);
-			else {
-				System.out.println("处理握手信息失败");
-				return;
-			}
 		}
 		bs=new byte[byteLen];
 		while (run && (len=inputStream.read(bs,0,bs.length))!=-1) {

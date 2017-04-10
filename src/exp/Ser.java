@@ -10,8 +10,10 @@ import dataByte.Data;
 public class Ser extends Server{
 	
 	
-	public Ser(Socket socket, LinkedList<Data> datas) throws IOException {
-		super(socket, datas);
+	
+
+	public Ser(Socket socket, LinkedList<Data> datas, int waitTime) throws IOException {
+		super(socket, datas, waitTime);
 		// TODO Auto-generated constructor stub
 	}
 

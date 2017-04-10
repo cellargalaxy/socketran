@@ -24,7 +24,7 @@ public abstract class Conversation {
 	private LinkedList<Data> datas;
 	private OutputThread outputThread;
 	private DataPool dataPool;
-	
+	private int waitTime;
 	
 	
 	
@@ -35,11 +35,12 @@ public abstract class Conversation {
 	 * @param datas
 	 * @throws IOException 
 	 */
-	Conversation(int byteLen, Socket socket, LinkedList<Data> datas) throws IOException {
+	Conversation(int byteLen, Socket socket, LinkedList<Data> datas,int waitTime) throws IOException {
 		super();
 		this.byteLen = byteLen;
 		this.socket = socket;
 		this.datas = datas;
+		this.waitTime=waitTime;
 		isServer = false;
 		dataPool=new DataPool();
 		ClientStart();
@@ -51,23 +52,24 @@ public abstract class Conversation {
 	 * @param datas
 	 * @throws IOException 
 	 */
-	Conversation(Socket socket, LinkedList<Data> datas) throws IOException {
+	Conversation(Socket socket, LinkedList<Data> datas,int waitTime) throws IOException {
 		super();
 		this.socket = socket;
 		this.datas = datas;
+		this.waitTime=waitTime;
 		isServer = true;
 		dataPool=new DataPool();
 		ServerStart();
 	}
 
 	private void ServerStart() throws IOException {
-		inputThread=new InputThread(this, byteLen, new DataPackage(datas), socket.getInputStream());
+		inputThread=new InputThread(this , new DataPackage(datas), socket.getInputStream());
 		new Thread(inputThread,"服务端inputThread").start();
 	}
 	
 	private void ClientStart() throws IOException {
 		inputThread=new InputThread(this, byteLen, new DataPackage(datas), socket.getInputStream());
-		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool);
+		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool,waitTime);
 		new Thread(inputThread,"客户端inputThread").start();
 		new Thread(outputThread,"客户端outputThread").start();
 		int len=-1;
@@ -105,7 +107,7 @@ public abstract class Conversation {
 		dealShakeHandInfo(mainShakeHandInfo.substring(mainShakeHandInfo.indexOf(SEPARATOR)+SEPARATOR.length()).trim());
 		
 		inputThread.setByteLen(byteLen);
-		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool);
+		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool,waitTime);
 		new Thread(outputThread,"服务端outputThread").start();
 	}
 	
@@ -124,7 +126,9 @@ public abstract class Conversation {
 		}
 	}
 	public boolean removeData(Data data) {
-		return dataPool.removeData(data);
+		synchronized (outputThread) { 
+			return dataPool.removeData(data);
+		}
 	}
 	
 	private static void fillingByte(byte[] bs1,int off,int len,byte[] bs2) {
