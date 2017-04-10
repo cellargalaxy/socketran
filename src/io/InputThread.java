@@ -60,6 +60,7 @@ public class InputThread extends IOThread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			conversation.stopAll();
+			System.out.println("对方断开了连接");
 		}
 	}
 	@Override

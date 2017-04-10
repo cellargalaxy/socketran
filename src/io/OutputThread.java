@@ -11,7 +11,6 @@ import dataByte.DataPool;
 public class OutputThread extends IOThread{
 	private OutputStream outputStream;
 	private DataPool dataPool;
-	private int waitTime;
 	
 	
 	
@@ -26,12 +25,11 @@ public class OutputThread extends IOThread{
 	 * @param byteLen
 	 */
 	public OutputThread(Conversation conversation, DataPackage dataPackage,int byteLen, OutputStream outputStream,
-			DataPool dataPool,int waitTime) {
+			DataPool dataPool) {
 		super(conversation, dataPackage);
 		this.byteLen=byteLen;
 		this.outputStream = outputStream;
 		this.dataPool = dataPool;
-		this.waitTime=waitTime;
 	}
 	
 	public void sendShakeHandInfo(byte[] bs,int off,int len) throws IOException {
@@ -44,7 +42,7 @@ public class OutputThread extends IOThread{
 			if (data!=null) {
 				sendData(data);
 			} else {
-				this.wait(waitTime);
+				this.wait();
 			}
 		}
 	}
@@ -75,6 +73,7 @@ public class OutputThread extends IOThread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			conversation.stopAll();
+			System.out.println("对方断开了连接");
 		}
 	}
 

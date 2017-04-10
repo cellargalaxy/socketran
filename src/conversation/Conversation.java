@@ -24,7 +24,6 @@ public abstract class Conversation {
 	private LinkedList<Data> datas;
 	private OutputThread outputThread;
 	private DataPool dataPool;
-	private int waitTime;
 	
 	
 	
@@ -36,12 +35,11 @@ public abstract class Conversation {
 	 * @param datas
 	 * @throws IOException 
 	 */
-	Conversation(int byteLen, Socket socket, LinkedList<Data> datas,int waitTime) throws IOException {
+	Conversation(int byteLen, Socket socket, LinkedList<Data> datas) throws IOException {
 		super();
 		this.byteLen = byteLen;
 		this.socket = socket;
 		this.datas = datas;
-		this.waitTime=waitTime;
 		isServer = false;
 		dataPool=new DataPool();
 		ClientStart();
@@ -69,7 +67,7 @@ public abstract class Conversation {
 	
 	private void ClientStart() throws IOException {
 		inputThread=new InputThread(this, byteLen, new DataPackage(datas), socket.getInputStream());
-		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool, waitTime);
+		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool);
 		new Thread(inputThread,"客户端inputThread").start();
 		new Thread(outputThread,"客户端outputThread").start();
 		int len=-1;
@@ -86,7 +84,7 @@ public abstract class Conversation {
 	public int createMainShakeHandInfo(byte[] bs,int off ,int len) {
 		try {
 			String mainShakeHandInfo=byteLen+SEPARATOR+createShakeHandInfo();
-			fillingByte(bs, off, len, mainShakeHandInfo.getBytes());
+			fillingByte(bs, off, len, mainShakeHandInfo.getBytes(CODING));
 			return bs.length;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -107,7 +105,7 @@ public abstract class Conversation {
 		dealShakeHandInfo(mainShakeHandInfo.substring(mainShakeHandInfo.indexOf(SEPARATOR)+SEPARATOR.length()).trim());
 		
 		inputThread.setByteLen(byteLen);
-		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool, waitTime);
+		outputThread=new OutputThread(this, new DataPackage(), byteLen, socket.getOutputStream(), dataPool);
 		new Thread(outputThread,"服务端outputThread").start();
 	}
 	
@@ -120,8 +118,10 @@ public abstract class Conversation {
 		} catch (Exception e) { e.printStackTrace(); }
 	}
 	public void addData(Data data) {
-		dataPool.addData(data);
-		synchronized (outputThread) { outputThread.notify(); }
+		synchronized (outputThread) { 
+			dataPool.addData(data);
+			outputThread.notify(); 
+		}
 	}
 	public boolean removeData(Data data) {
 		return dataPool.removeData(data);

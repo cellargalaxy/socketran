@@ -1,8 +1,6 @@
 package exp;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 
@@ -10,7 +8,7 @@ import conversation.Server;
 import dataByte.Data;
 
 public class Ser extends Server{
-	public static Ser ser;
+	
 	
 	public Ser(Socket socket, LinkedList<Data> datas) throws IOException {
 		super(socket, datas);
@@ -31,13 +29,5 @@ public class Ser extends Server{
 	}
 	
 	
-	public static void main(String[] args) throws IOException {
-		ServerSocket serverSocket=new ServerSocket(1234);
-		Socket socket=serverSocket.accept();
-		LinkedList<Data> datas=new LinkedList<Data>();
-		datas.add(new DataFile(new File("g:/")));
-		datas.add(new DataString(null));
-		ser=new Ser(socket, datas);
-		serverSocket.close();
-	}
+
 }

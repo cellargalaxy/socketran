@@ -2,38 +2,40 @@ package exp;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import dataByte.Data;
 
 public class DataFile implements Data{
+//	private long yetInfoLen;
 	private File file;
+	private String headInfo;
 	private InputStream inputStream;
 	private OutputStream outputStream;
 	
 	
 	
-	public DataFile(File file) {
+	public DataFile(File file,String headInfo) {
 		super();
 		this.file = file;
+		this.headInfo=headInfo;
+//		yetInfoLen=0;
 	}
 
 	@Override
 	public String getDataName() {
 		// TODO Auto-generated method stub
 		//System.out.println("调用了getDataName");
-		return "file";
+		return "DATAFILE";
 	}
 
 	@Override
 	public String getHeadInfo() {
 		// TODO Auto-generated method stub
 		//System.out.println("调用了getHeadInfo");
-		return file.getName();
+		return headInfo;
 	}
 
 	@Override
@@ -46,8 +48,9 @@ public class DataFile implements Data{
 	@Override
 	public boolean initRead() {
 		// TODO Auto-generated method stub
-		System.out.println("调用了initRead");
+		//System.out.println("调用了initRead");
 		try {
+			System.out.println("发送文件:"+file.getAbsolutePath());
 			inputStream=new FileInputStream(file);
 			return true;
 		} catch (Exception e) {
@@ -62,8 +65,10 @@ public class DataFile implements Data{
 		// TODO Auto-generated method stub
 		//System.out.println("调用了read");
 		try {
+//			yetInfoLen+=len-off;
+//			System.out.println("发送进度:"+headInfo+":"+(int)(100.0*yetInfoLen/file.length())+"%,"+yetInfoLen+":"+file.length());
 			return inputStream.read(bs, off, len);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return -1;
@@ -73,10 +78,10 @@ public class DataFile implements Data{
 	@Override
 	public void destroyRead() {
 		// TODO Auto-generated method stub
-		System.out.println("调用了destroyRead");
+		//System.out.println("调用了destroyRead");
 		try {
 			inputStream.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -84,14 +89,16 @@ public class DataFile implements Data{
 
 	@Override
 	public boolean initWrite(String headInfo) {
-		System.out.println("调用了initWrite");
+		//System.out.println("调用了initWrite");
 		// TODO Auto-generated method stub
 		try {
-			if(!file.exists()) file.mkdirs();
+			this.headInfo=headInfo;
 			File savefile=new File(file.getAbsolutePath()+"/"+headInfo);
+			System.out.println("文件保存到:"+savefile.getAbsolutePath());
+			if(!savefile.getParentFile().exists()&&!savefile.getParentFile().mkdirs()) return false;
 			outputStream=new FileOutputStream(savefile);
 			return true;
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
@@ -105,7 +112,9 @@ public class DataFile implements Data{
 		try {
 			outputStream.write(bs, off, len);
 			outputStream.flush();
-		} catch (IOException e) {
+//			yetInfoLen+=len-off;
+//			System.out.println("接收进度:"+headInfo+":"+yetInfoLen);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -113,11 +122,11 @@ public class DataFile implements Data{
 
 	@Override
 	public void destroyWrite() {
-		System.out.println("调用了destroyWrite");
+		//System.out.println("调用了destroyWrite");
 		// TODO Auto-generated method stub
 		try {
 			outputStream.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

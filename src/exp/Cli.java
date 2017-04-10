@@ -11,8 +11,8 @@ import dataByte.Data;
 
 public class Cli extends Client{
 
-	public Cli(int byteLen, Socket socket, LinkedList<Data> datas,int waitTime) throws IOException {
-		super(byteLen, socket, datas, waitTime);
+	public Cli(int byteLen, Socket socket, LinkedList<Data> datas) throws IOException {
+		super(byteLen, socket, datas);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -29,14 +29,33 @@ public class Cli extends Client{
 		System.out.println("调用了客户端的dealShakeHandInfo;客户端是不会收到握手信息的:"+shakeHandInfo);
 	}
 	
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		int byteLen=1024;
-		Socket socket=new Socket("127.0.0.1", 1234);
+	public void sendFolderOrFile(File file) {
+		if (file.isFile()) {
+			addData(new DataFile(file, file.getName()));
+		}else {
+			LinkedList<File> files=new LinkedList<File>();
+			sendFolder(files, file, file);
+		}
+	}
+	private void sendFolder(LinkedList<File> files,File root,File file) {
+		if (file.isFile()) {
+			String headInfo=root.getName()+file.getAbsolutePath().substring(root.getAbsolutePath().length());
+			addData(new DataFile(file, headInfo));
+		} else {
+			File[] fs=file.listFiles();
+			for(File f:fs) sendFolder(files, root, f);
+		}
+	}
+	
+	public static Cli createCli(int byteLen,String host,int port,File saveFolder) throws UnknownHostException, IOException {
+		Socket socket=new Socket(host, port);
 		LinkedList<Data> datas=new LinkedList<Data>();
-		datas.add(new DataFile(new File("g:/")));
-		Cli cli=new Cli(byteLen, socket, datas,1000);
-		cli.addData(new DataString("hello world！"));
-		cli.addData(new DataFile(new File("h:/huaji.jpg")));
-		cli.addData(new DataFile(new File("h:/templateback.jpg")));
+		datas.add(new DataFile(saveFolder,null));
+		datas.add(new DataString(null));
+		return new Cli(byteLen, socket, datas);
+	}
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		Cli cli=Cli.createCli(1024, "127.0.0.1", 1234, new File("g:/"));
+		cli.sendFolderOrFile(new File("G:/电影/MTCT161118106.mp4"));
 	}
 }
