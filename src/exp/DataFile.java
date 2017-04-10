@@ -78,7 +78,7 @@ public class DataFile implements Data{
 	@Override
 	public void destroyRead() {
 		// TODO Auto-generated method stub
-		//System.out.println("调用了destroyRead");
+		System.out.println("发送完成:"+file.getAbsolutePath());
 		try {
 			inputStream.close();
 		} catch (Exception e) {
@@ -122,7 +122,7 @@ public class DataFile implements Data{
 
 	@Override
 	public void destroyWrite() {
-		//System.out.println("调用了destroyWrite");
+		System.out.println("接收完成:"+headInfo);
 		// TODO Auto-generated method stub
 		try {
 			outputStream.close();
