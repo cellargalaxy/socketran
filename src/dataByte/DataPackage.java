@@ -21,8 +21,7 @@ public class DataPackage {
 	
 	private boolean yetMainHeadInfo;
 	private boolean yetSeconHeadInfo;
-	
-	
+
 	
 	
 	/**
@@ -57,7 +56,7 @@ public class DataPackage {
 				yetSeconHeadInfo=true;
 				return createSeconHeadInfo(bs,off,len);
 			}else {
-				infoLenCount+=len-off;
+				infoLenCount+=len;
 				if(infoLenCount>infoLen) {
 					len-=infoLenCount-infoLen;
 					return readInfo(bs,off,len);
@@ -105,8 +104,6 @@ public class DataPackage {
 		}
 	}
 	
-	
-	
 	public boolean write(byte[] bs,int off ,int len) {
 	//	System.out.println("收到:"+new String(bs,off,len));
 		try {
@@ -117,7 +114,7 @@ public class DataPackage {
 				yetSeconHeadInfo=true;
 				return dealSeconHeadInfo(bs, off, len);
 			}else {
-				infoLenCount+=len-off;
+				infoLenCount+=len;
 				if (infoLenCount>=infoLen) {
 					len-=infoLenCount-infoLen;
 					writeInfo(bs, off, len);
@@ -134,7 +131,7 @@ public class DataPackage {
 			return false;
 		}
 	}
-	public void destroyWrite() {
+	public void destroyWrite(byte[] bs,int off ,int len) {
 		if(data!=null) {
 			data.destroyWrite();
 			data=null;
@@ -149,6 +146,8 @@ public class DataPackage {
 	}
 	private boolean dealMainHeadInfo(byte[] bs,int off ,int len) throws UnsupportedEncodingException {
 		String mainHeadInfo=new String(bs, off, len,CODING);
+		System.out.println();
+		System.out.println();
 		String[] mainHeadInfos=mainHeadInfo.split(SEPARATOR);
 		if(!choiceData(mainHeadInfos[0])) return false;
 		randomNum=new Integer(mainHeadInfos[1]);

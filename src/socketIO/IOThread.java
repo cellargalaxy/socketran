@@ -1,4 +1,4 @@
-package io;
+package socketIO;
 
 import conversation.Conversation;
 import dataByte.DataPackage;

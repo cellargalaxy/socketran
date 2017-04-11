@@ -1,4 +1,4 @@
-package io;
+package socketIO;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ public class InputThread extends IOThread{
 		}
 		bs=new byte[byteLen];
 		while (run && (len=inputStream.read(bs,0,bs.length))!=-1) {
-			if(!dataPackage.write(bs, 0, len)) dataPackage.destroyWrite();
+			if(!dataPackage.write(bs, 0, len)) dataPackage.destroyWrite(bs, 0, len);
 		}
 	}
 	

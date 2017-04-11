@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import dataByte.Data;
 import dataByte.DataPackage;
 import dataByte.DataPool;
-import io.InputThread;
-import io.OutputThread;
+import socketIO.InputThread;
+import socketIO.OutputThread;
 
 public abstract class Conversation {
 	private final static byte SPACE=32;
@@ -25,7 +25,6 @@ public abstract class Conversation {
 	private OutputThread outputThread;
 	private DataPool dataPool;
 	private int waitTime;
-	
 	
 	
 	/**

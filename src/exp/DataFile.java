@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import dataByte.Data;
 
 public class DataFile implements Data{
-//	private long yetInfoLen;
 	private File file;
 	private String headInfo;
 	private InputStream inputStream;
@@ -21,7 +20,6 @@ public class DataFile implements Data{
 		super();
 		this.file = file;
 		this.headInfo=headInfo;
-//		yetInfoLen=0;
 	}
 
 	@Override
@@ -48,7 +46,6 @@ public class DataFile implements Data{
 	@Override
 	public boolean initRead() {
 		// TODO Auto-generated method stub
-		//System.out.println("调用了initRead");
 		try {
 			System.out.println("发送文件:"+file.getAbsolutePath());
 			inputStream=new FileInputStream(file);
@@ -63,9 +60,7 @@ public class DataFile implements Data{
 	@Override
 	public int read(byte[] bs, int off, int len) {
 		// TODO Auto-generated method stub
-		//System.out.println("调用了read");
 		try {
-//			yetInfoLen+=len-off;
 //			System.out.println("发送进度:"+headInfo+":"+(int)(100.0*yetInfoLen/file.length())+"%,"+yetInfoLen+":"+file.length());
 			return inputStream.read(bs, off, len);
 		} catch (Exception e) {
@@ -89,7 +84,6 @@ public class DataFile implements Data{
 
 	@Override
 	public boolean initWrite(String headInfo) {
-		//System.out.println("调用了initWrite");
 		// TODO Auto-generated method stub
 		try {
 			this.headInfo=headInfo;
@@ -108,11 +102,9 @@ public class DataFile implements Data{
 	@Override
 	public void write(byte[] bs, int off, int len) {
 		// TODO Auto-generated method stub
-		//System.out.println("调用了write");
 		try {
 			outputStream.write(bs, off, len);
 			outputStream.flush();
-//			yetInfoLen+=len-off;
 //			System.out.println("接收进度:"+headInfo+":"+yetInfoLen);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -15,7 +15,7 @@ public class SerThread implements Runnable{
 	private int waitTime;
 	
 	public static void main(String[] args) throws IOException {
-		new Thread(new SerThread(1234, new File("f:/"),10),"服务端").start();
+		new Thread(new SerThread(1234, new File("f:/test"),10),"服务端").start();
 	}
 	
 	public SerThread(int port,File saveFolder,int waitTime) throws IOException {
