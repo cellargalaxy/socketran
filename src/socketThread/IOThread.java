@@ -1,11 +1,12 @@
-package socketIO;
+package socketThread;
 
 import conversation.Conversation;
-import dataByte.DataPackage;
+import io.DataPackage;
 
 public abstract class IOThread implements Runnable{
 	protected boolean run;
 	protected Conversation conversation;
+	protected int byteOff;
 	protected int byteLen;
 	protected DataPackage dataPackage;
 	
@@ -19,6 +20,11 @@ public abstract class IOThread implements Runnable{
 	}
 	
 	public abstract void stop();
+	
+	
+	public void setByteOff(int byteOff) {
+		this.byteOff = byteOff;
+	}
 
 	public void setByteLen(int byteLen) {
 		this.byteLen = byteLen;

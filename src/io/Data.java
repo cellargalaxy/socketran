@@ -1,4 +1,4 @@
-package dataByte;
+package io;
 
 /**
  * @author cellargalaxy
@@ -22,7 +22,7 @@ public interface Data {
 	 * 初始化读，例如创建流对象
 	 * @return 返回初始化是否成功，若失败则会跳过
 	 */
-	public boolean initRead();
+	public void initRead() throws Exception;
 	/**
 	 * 跟io流一样含义
 	 * @param bs
@@ -30,7 +30,7 @@ public interface Data {
 	 * @param len
 	 * @return
 	 */
-	public int read(byte[] bs,int off,int len);
+	public int read(byte[] bs,int off,int len) throws Exception;
 	/**
 	 * 对读做最后一些销毁处理，例如关闭流
 	 */
@@ -41,14 +41,14 @@ public interface Data {
 	 * @param headInfo ,对方发送过来的头信息
 	 * @return 初始化是否成功，若失败则会跳过
 	 */
-	public boolean initWrite(String headInfo);
+	public void initWrite(String headInfo) throws Exception;
 	/**
 	 * 跟io流一样含义
 	 * @param bs
 	 * @param off
 	 * @param len
 	 */
-	public void write(byte[] bs,int off ,int len);
+	public void write(byte[] bs,int off ,int len) throws Exception;
 	/**
 	 * 对写做最后一些销毁处理，例如关闭流
 	 */

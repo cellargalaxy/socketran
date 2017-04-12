@@ -6,31 +6,28 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 
-import dataByte.Data;
+import io.Data;
 
 public class SerThread implements Runnable{
 	private File saveFolder;
 	private boolean run;
 	private ServerSocket serverSocket;
-	private int waitTime;
 	
-	public static void main(String[] args) throws IOException {
-		new Thread(new SerThread(1234, new File("f:/test"),10),"服务端").start();
-	}
+//	public static void main(String[] args) throws IOException {
+//		new Thread(new SerThread(1234, new File("f:/test")),"服务端").start();
+//	}
 	
-	public SerThread(int port,File saveFolder,int waitTime) throws IOException {
+	public SerThread(int port,File saveFolder) throws IOException {
 		super();
 		this.saveFolder=saveFolder;
-		this.waitTime=waitTime;
 		run=true;
 		serverSocket=new ServerSocket(port);
 	}
 
 	private void server(Socket socket) throws IOException {
 		LinkedList<Data> datas=new LinkedList<Data>();
-		datas.add(new DataFile(saveFolder,null));
-		datas.add(new DataString(null));
-		new Ser(socket, datas,waitTime);
+		datas.add(new FileData(saveFolder,null));
+		new Ser(socket, datas);
 	}
 	private void stop() {
 		run=false;
@@ -50,5 +47,4 @@ public class SerThread implements Runnable{
 			stop();
 		}
 	}
-
 }

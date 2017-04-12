@@ -14,7 +14,6 @@ public class StartUp {
 	private static int port;
 	private static int byteLen=1024;
 	private static File saveFolder=new File(".");
-	private static int waitTime;
 	
 	public static void main(String[] args) throws IOException {
 		startup(new File("socketran.conf"));
@@ -31,8 +30,8 @@ public class StartUp {
 			System.out.println("配置文件不存在:"+conFile.getAbsolutePath());
 			return;
 		}else if (conf()) {
-			if(isServer) new Thread(new SerThread(port, saveFolder,waitTime),"服务端").start();
-			else cli=Cli.createCli(byteLen, host, port, saveFolder,waitTime);
+			if(isServer) new Thread(new SerThread(port, saveFolder),"服务端").start();
+			else cli=Cli.createCli(byteLen, host, port, saveFolder);
 		}
 	}
 	
@@ -67,13 +66,6 @@ public class StartUp {
 				try { port=new Integer(string); } catch (Exception e) { System.out.println("请检查port属性是否正确:"+string); return false;  }
 			}else {
 				System.out.println("缺少port属性，必填");
-				return false;
-			}
-			
-			if((string=properties.getProperty("waitTime"))!=null){
-				try { waitTime=new Integer(string); } catch (Exception e) { System.out.println("请检查waitTime属性是否正确:"+string); return false;  }
-			}else {
-				System.out.println("缺少waitTime属性，必填");
 				return false;
 			}
 			

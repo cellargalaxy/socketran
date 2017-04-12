@@ -5,15 +5,12 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 import conversation.Server;
-import dataByte.Data;
+import io.Data;
 
 public class Ser extends Server{
 	
-	
-	
-
-	public Ser(Socket socket, LinkedList<Data> datas, int waitTime) throws IOException {
-		super(socket, datas, waitTime);
+	public Ser(Socket socket, LinkedList<Data> datas) throws IOException {
+		super(socket, datas);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -29,7 +26,4 @@ public class Ser extends Server{
 		// TODO Auto-generated method stub
 		System.out.println("调用了服务端的dealShakeHandInfo:"+shakeHandInfo);
 	}
-	
-	
-
 }
